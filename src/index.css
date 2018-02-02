@@ -7,6 +7,61 @@ ol, ul {
   padding-left: 30px;
 }
 
+/**PLAYERS**********/
+.players{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: auto;
+  border:1px solid #444;
+}
+
+.player{
+  font-size:24px;
+  width: 50%;
+  text-align: center;
+}
+
+.player.active{
+  font-weight: 700;
+}
+
+.player.winner{
+  font-weight: 900;
+  transform: scale(2);
+}
+
+.player .points{
+  clear: both;
+  font-weight: 700;
+  font-size:48px;
+  text-align: center;
+}
+
+/**GAME**********/
+.game {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding-top: 50px;
+}
+
+.game-board{
+  box-shadow: 0px 0px 30px 10px #444;
+  border-radius: 10px;
+}
+
+.game-info {
+  margin-left: 20px;
+  height: 200px; 
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+
+/**BOARD************/
 .board-row:after {
   clear: both;
   content: "";
@@ -16,20 +71,37 @@ ol, ul {
 .status {
   margin-bottom: 10px;
 }
+/**SQUARES*********/
+
 
 .square {
   background: #fff;
-  border: 1px solid #999;
   float: left;
   font-size: 24px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
-  margin-right: -1px;
-  margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  cursor: pointer;
+  z-index: 0;
+}
+
+.square div{
+  background-color: blanchedalmond;
+  line-height: 50px;
+  height: 50px;
+  width: 50px;
+  opacity: 0.9;
+  transition: transform 0.1s;
+  border: 1px solid #333;
+}
+
+.square div:hover{
+  opacity: 1;
+  border: 1px solid transparnt;
+  transform: scale(1.5);
+  border-radius: 50%;
+  position: relative;
+  z-index: 100;
 }
 
 .hexagon {
@@ -46,19 +118,39 @@ ol, ul {
   background-color: aquamarine;
 }
 
-.square:focus {
-  outline: none;
-}
+/*Raimbow colors*/
+.color0, .color0 div.number{background-color:#fbb735;}
+.color1, .color1 div.number{background-color:#e98931;}
+.color2, .color2 div.number{background-color:#eb403b;} 
+.color3, .color3 div.number{background-color:#b32E37;} 
+.color4, .color4 div.number{background-color:#6c2a6a;} 
+.color5, .color5 div.number{background-color:#5c4399;} 
+.color6, .color6 div.number{background-color:#274389;} 
+.color7, .color7 div.number{background-color:#1f5ea8;} 
+.color8, .color8 div.number{background-color:#227FB0;} 
+.color9, .color9 div.number{background-color:#2ab0c5;} 
+.color10, .color10 div.number{background-color:#00CDEB;}
+
+/*Teal and orange*/
+/*Raimbow colors*/
+.color0, .color0 div.number{background-color:#FFB60A;}
+.color0 div.number{color:#FFB60A;}
+.color1, .color1 div.number{background-color:#E5B820;}
+.color2, .color2 div.number{background-color:#CCBA37;} 
+.color3, .color3 div.number{background-color:#B2BC4D;} 
+.color4, .color4 div.number{background-color:#99BF64;} 
+.color5, .color5 div.number{background-color:#7FC17A;} 
+.color6, .color6 div.number{background-color:#66C391;} 
+.color7, .color7 div.number{background-color:#4CC6A7;} 
+.color8, .color8 div.number{background-color:#33C8BE;} 
+.color9, .color9 div.number{background-color:#19CAD4;} 
+.color10, .color10 div.number{background-color:#39c0b3;}
+.color10 div.number{color:#39c0b3;}
 
 .kbd-navigation .square:focus {
   background: #ddd;
 }
 
-.game {
-  display: flex;
-  flex-direction: row;
-}
 
-.game-info {
-  margin-left: 20px;
-}
+
+ 

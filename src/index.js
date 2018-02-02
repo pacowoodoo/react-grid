@@ -2,18 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-function Square(props) {
-  return (
-    <button className="hexagon" onClick={props.onClick}>
-      {props.value}
-    </button>
-  );
-}
+
 
 class Board extends React.Component {
   renderSquare(i) {
+    var key = "square" + i;
     return (
       <Square
+        key={key}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
@@ -21,12 +17,11 @@ class Board extends React.Component {
   }
 
   render() {
-    console.log(this.props.squares);
     var rows = [];
     var cells = [];
     var cellNumber = 0;
-    for (var i = 0; i < 3; i++) {
-      for (var j = 0; j < 3; j++) {
+    for (var i = 0; i < this.props.rows; i++) {
+      for (var j = 0; j < this.props.cols; j++) {
         cells.push(this.renderSquare(cellNumber))
         cellNumber++
       }
@@ -37,61 +32,63 @@ class Board extends React.Component {
       <div>
         {rows}
       </div>
-    )
-
-    /*  return (
-       <div>
-         <div className="board-row">
-           {this.renderSquare(0)}
-           {this.renderSquare(1)}
-           {this.renderSquare(2)}
-         </div>
-         <div className="board-row">
-           {this.renderSquare(3)}
-           {this.renderSquare(4)}
-           {this.renderSquare(5)}
-         </div>
-         <div className="board-row">
-           {this.renderSquare(6)}
-           {this.renderSquare(7)}
-           {this.renderSquare(8)}
-         </div>
-         <div className="domino">
-           {moreSquares}
-         </div>
-       </div>
-     ); */
+    );
   }
 }
 
 class Domino extends React.Component {
   constructor(props) {
     super(props);
-    let rows = 4;
-    let cols = 4;
+    let rows = 9;
+    let cols = 9;
 
     this.state = {
       rows: rows,
       cols: cols,
       history: [{
-        squares: Array(rows * cols).fill(null)
+        squares: Array(rows * cols).fill(5)
       }],
-
+      pl1: 0,
+      pl2: 0,
+      winner: 0,
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: false
     };
   }
 
   handleClick(i) {
+    const R = require('ramda');
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
-    const squares = current.squares.slice();
+    var squares = current.squares.slice();
 
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    var col = i % this.state.cols;
+    var row = Math.floor(i / this.state.rows);
+
+    var moveArray = Array(this.state.rows * this.state.cols).fill(0);
+    moveArray = moveArray.map((value, index, moveArray) =>
+      (index % this.state.cols === col || Math.floor(index / this.state.rows) === row) ?
+        moveArray[index] = 1 : moveArray[index] = 0
+    );
+
+    if (this.state.xIsNext) {
+      if (current.squares[i] !== 0) {
+        squares[i] = current.squares[i] + 1;
+      }
+      squares = R.zipWith(squareSum, squares, moveArray);
+    } else {
+      if (current.squares[i] !== 10) {
+        squares[i] = current.squares[i] - 1;
+      }
+      squares = R.zipWith(squareSub, squares, moveArray);
+    }
+
     this.setState({
       history: history.concat([{
         squares: squares
       }]),
+      pl1: R.without(R.without([0], squares), squares).length,
+      pl2: R.without(R.without([10], squares), squares).length,
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
     });
@@ -121,23 +118,62 @@ class Domino extends React.Component {
 
 
     return (
-      <div className="game">
-        <div className="game-board">
-          <Board
-            squares={current.squares}
-            cols={this.state.cols}
-            rows={this.state.rows}
-            onClick={(i) => this.handleClick(i)}
-          />
-        </div>
-        <div className="game-info">
-          <ol>{moves}</ol>
+      <div class="wrapper">
+
+        <div className="game">
+          <div className="game-board">
+            <Players
+              current={this.state.xIsNext}
+              pl1points={this.state.pl1}
+              pl2points={this.state.pl2}
+            />
+            <Board
+              squares={current.squares}
+              cols={this.state.cols}
+              rows={this.state.rows}
+              onClick={(i) => this.handleClick(i)}
+            />
+          </div>
+          <div className="game-info">
+            <ol>{moves}</ol>
+          </div>
         </div>
       </div>
     );
   }
 }
 
+function Square(props) {
+  var classname = "square color" + props.value;
+  return (
+    <div className={classname} onClick={props.onClick}>
+      <div class="number">{props.value}</div>
+    </div>
+  );
+}
+
+function Players(props) {
+  var classPl1 = "player color0";
+  var classPl2 = "player color10";
+  if (!props.current) {
+    classPl1 += " active";
+  } else {
+    classPl2 += " active";
+  }
+
+  return (
+    <div class="players">
+      <div class={classPl1}>
+        Giocatore1
+        <div class="points"> {props.pl1points}</div>
+      </div>
+      <div class={classPl2}>
+        Giocatore2
+        <div class="points"> {props.pl2points}</div>
+      </div>
+    </div>
+  );
+}
 // ========================================
 
 ReactDOM.render(
@@ -146,3 +182,23 @@ ReactDOM.render(
 );
 
 
+const squareSum = (x, y) => {
+  if (x === 0 || x === 10) {
+    return x;
+  }
+  if (x + y < 11) {
+    return x + y;
+  } else {
+    return 10;
+  };
+};
+const squareSub = (x, y) => {
+  if (x === 0 || x === 10) {
+    return x;
+  }
+  if (x - y > 0) {
+    return x - y;
+  } else {
+    return 0;
+  };
+};
