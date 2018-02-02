@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-
-
+const R = require('ramda');
 
 class Board extends React.Component {
   renderSquare(i) {
@@ -57,7 +56,6 @@ class Domino extends React.Component {
   }
 
   handleClick(i) {
-    const R = require('ramda');
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     var squares = current.squares.slice();
@@ -65,39 +63,51 @@ class Domino extends React.Component {
     var col = i % this.state.cols;
     var row = Math.floor(i / this.state.rows);
 
-    var moveArray = Array(this.state.rows * this.state.cols).fill(0);
-    moveArray = moveArray.map((value, index, moveArray) =>
-      (index % this.state.cols === col || Math.floor(index / this.state.rows) === row) ?
-        moveArray[index] = 1 : moveArray[index] = 0
-    );
+    if (checkWinner(this.state.pl1, this.state.pl2) == 0) {
+      var moveArray = Array(this.state.rows * this.state.cols).fill(0);
+      moveArray = moveArray.map((value, index, moveArray) =>
+        (index % this.state.cols === col || Math.floor(index / this.state.rows) === row) ?
+          moveArray[index] = 1 : moveArray[index] = 0
+      );
 
-    if (this.state.xIsNext) {
-      if (current.squares[i] !== 0) {
-        squares[i] = current.squares[i] + 1;
+      if (this.state.xIsNext) {
+        if (current.squares[i] !== 0) {
+          squares[i] = current.squares[i] + 1;
+        }
+        squares = R.zipWith(squareSum, squares, moveArray);
+      } else {
+        if (current.squares[i] !== 10) {
+          squares[i] = current.squares[i] - 1;
+        }
+        squares = R.zipWith(squareSub, squares, moveArray);
       }
-      squares = R.zipWith(squareSum, squares, moveArray);
-    } else {
-      if (current.squares[i] !== 10) {
-        squares[i] = current.squares[i] - 1;
-      }
-      squares = R.zipWith(squareSub, squares, moveArray);
+      var pointPl1 = R.without(R.without([0], squares), squares).length;
+      var pointPl2 = R.without(R.without([10], squares), squares).length;
+
+      this.setState({
+        history: history.concat([{
+          squares: squares
+        }]),
+        pl1: pointPl1,
+        pl2: pointPl2,
+        winner: checkWinner(pointPl1, pointPl2),
+        stepNumber: history.length,
+        xIsNext: !this.state.xIsNext,
+      });
     }
-
-    this.setState({
-      history: history.concat([{
-        squares: squares
-      }]),
-      pl1: R.without(R.without([0], squares), squares).length,
-      pl2: R.without(R.without([10], squares), squares).length,
-      stepNumber: history.length,
-      xIsNext: !this.state.xIsNext,
-    });
   }
 
   jumpTo(step) {
+
+    var pointPl1 = R.without(R.without([0], this.state.history[step]), this.state.history[step]).length;
+    var pointPl2 = R.without(R.without([10], this.state.history[step]), this.state.history[step]).length;
+
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
+      pl1: pointPl1,
+      pl2: pointPl2,
+      winner: checkWinner(pointPl1, pointPl2),
     });
   }
 
@@ -126,6 +136,7 @@ class Domino extends React.Component {
               current={this.state.xIsNext}
               pl1points={this.state.pl1}
               pl2points={this.state.pl2}
+              winner={this.state.winner}
             />
             <Board
               squares={current.squares}
@@ -155,12 +166,17 @@ function Square(props) {
 function Players(props) {
   var classPl1 = "player color0";
   var classPl2 = "player color10";
-  if (!props.current) {
-    classPl1 += " active";
+  if (props.winner === 1) {
+    classPl1 += " winner";
+  } else if (props.winner === 2) {
+    classPl2 += " winner";
   } else {
-    classPl2 += " active";
+    if (!props.current) {
+      classPl1 += " active";
+    } else {
+      classPl2 += " active";
+    }
   }
-
   return (
     <div class="players">
       <div class={classPl1}>
@@ -181,6 +197,16 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+function checkWinner(pl1, pl2) {
+  var winner = 0;
+  if (pl1 >= 10) {
+    winner = 1;
+  }
+  if (pl2 >= 10) {
+    winner = 2;
+  }
+  return winner;
+}
 
 const squareSum = (x, y) => {
   if (x === 0 || x === 10) {
@@ -192,6 +218,7 @@ const squareSum = (x, y) => {
     return 10;
   };
 };
+
 const squareSub = (x, y) => {
   if (x === 0 || x === 10) {
     return x;

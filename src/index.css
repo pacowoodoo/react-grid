@@ -21,15 +21,17 @@ ol, ul {
   font-size:24px;
   width: 50%;
   text-align: center;
+  opacity: 0.5;
 }
 
 .player.active{
   font-weight: 700;
+  opacity: 0.9;
 }
 
 .player.winner{
   font-weight: 900;
-  transform: scale(2);
+  opacity: 1 !important;
 }
 
 .player .points{
@@ -91,7 +93,7 @@ ol, ul {
   height: 50px;
   width: 50px;
   opacity: 0.9;
-  transition: transform 0.1s;
+  transition: transform 0.1s, color 0.5s, background-color 0.5s;
   border: 1px solid #333;
 }
 
