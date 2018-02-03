@@ -63,7 +63,7 @@ class Domino extends React.Component {
     var col = i % this.state.cols;
     var row = Math.floor(i / this.state.rows);
 
-    if (checkWinner(this.state.pl1, this.state.pl2) == 0) {
+    if (checkWinner(this.state.pl1, this.state.pl2) === 0) {
       var moveArray = Array(this.state.rows * this.state.cols).fill(0);
       moveArray = moveArray.map((value, index, moveArray) =>
         (index % this.state.cols === col || Math.floor(index / this.state.rows) === row) ?
@@ -128,7 +128,7 @@ class Domino extends React.Component {
 
 
     return (
-      <div class="wrapper">
+      <div className="wrapper">
 
         <div className="game">
           <div className="game-board">
@@ -158,7 +158,7 @@ function Square(props) {
   var classname = "square color" + props.value;
   return (
     <div className={classname} onClick={props.onClick}>
-      <div class="number">{props.value}</div>
+      <div className="number">{props.value}</div>
     </div>
   );
 }
@@ -178,14 +178,14 @@ function Players(props) {
     }
   }
   return (
-    <div class="players">
-      <div class={classPl1}>
+    <div className="players">
+      <div className={classPl1}>
         Giocatore1
-        <div class="points"> {props.pl1points}</div>
+        <div className="points"> {props.pl1points}</div>
       </div>
-      <div class={classPl2}>
+      <div className={classPl2}>
         Giocatore2
-        <div class="points"> {props.pl2points}</div>
+        <div className="points"> {props.pl2points}</div>
       </div>
     </div>
   );
