@@ -180,22 +180,16 @@ function Players(props) {
   return (
     <div className="players">
       <div className={classPl1}>
-        Giocatore1
+        Orange
         <div className="points"> {props.pl1points}</div>
       </div>
       <div className={classPl2}>
-        Giocatore2
+        Teal
         <div className="points"> {props.pl2points}</div>
       </div>
     </div>
   );
 }
-// ========================================
-
-ReactDOM.render(
-  <Domino />,
-  document.getElementById('root')
-);
 
 function checkWinner(pl1, pl2) {
   var winner = 0;
@@ -229,3 +223,10 @@ const squareSub = (x, y) => {
     return 0;
   };
 };
+
+// ========================================
+
+ReactDOM.render(
+  <Domino />,
+  document.getElementById('root')
+);
