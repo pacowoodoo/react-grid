@@ -178,16 +178,17 @@ function Players(props) {
     }
   }
   return (
-    <div className="players">
-      <div className={classPl1}>
-        Orange
-        <div className="points"> {props.pl1points}</div>
-      </div>
+    <h1 className="players">
       <div className={classPl2}>
         Teal
         <div className="points"> {props.pl2points}</div>
       </div>
-    </div>
+      <div className="vessus">VS</div>
+      <div className={classPl1}>
+        Orange
+        <div className="points"> {props.pl1points}</div>
+      </div>
+    </h1>
   );
 }
 
