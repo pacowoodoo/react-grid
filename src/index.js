@@ -9,7 +9,9 @@ class Board extends React.Component {
     return (
       <Square
         key={key}
+        index={i}
         value={this.props.squares[i]}
+        lastMv={this.props.lastMv}
         onClick={() => this.props.onClick(i)}
       />
     );
@@ -49,6 +51,9 @@ class Domino extends React.Component {
       }],
       pl1: 0,
       pl2: 0,
+      lastMv:{
+        pl1: -1,
+        pl2: -1},
       winner: 0,
       stepNumber: 0,
       xIsNext: false
@@ -63,23 +68,28 @@ class Domino extends React.Component {
     var col = i % this.state.cols;
     var row = Math.floor(i / this.state.rows);
 
-    if (checkWinner(this.state.pl1, this.state.pl2) === 0) {
+    if (checkWinner(this.state.pl1, this.state.pl2) === 0 &&
+       (this.state.lastMv.pl2 !== i) &&
+       (this.state.lastMv.pl1 !== i)) {
       var moveArray = Array(this.state.rows * this.state.cols).fill(0);
       moveArray = moveArray.map((value, index, moveArray) =>
         (index % this.state.cols === col || Math.floor(index / this.state.rows) === row) ?
           moveArray[index] = 1 : moveArray[index] = 0
       );
-
+      let lastMvPl1 = this.state.lastMv.pl1;
+      let lastMvPl2 = this.state.lastMv.pl2;
       if (this.state.xIsNext) {
         if (current.squares[i] !== 0) {
           squares[i] = current.squares[i] + 1;
         }
         squares = R.zipWith(squareSum, squares, moveArray);
+        lastMvPl2 = i;
       } else {
         if (current.squares[i] !== 10) {
           squares[i] = current.squares[i] - 1;
         }
         squares = R.zipWith(squareSub, squares, moveArray);
+        lastMvPl1 = i;
       }
       var pointPl1 = R.without(R.without([0], squares), squares).length;
       var pointPl2 = R.without(R.without([10], squares), squares).length;
@@ -90,6 +100,9 @@ class Domino extends React.Component {
         }]),
         pl1: pointPl1,
         pl2: pointPl2,
+        lastMv:{
+          pl1: lastMvPl1,
+          pl2: lastMvPl2},
         winner: checkWinner(pointPl1, pointPl2),
         stepNumber: history.length,
         xIsNext: !this.state.xIsNext,
@@ -97,17 +110,24 @@ class Domino extends React.Component {
     }
   }
 
-  jumpTo(step) {
+  reset() {
+    let rows = 9;
+    let cols = 9;
 
-    var pointPl1 = R.without(R.without([0], this.state.history[step]), this.state.history[step]).length;
-    var pointPl2 = R.without(R.without([10], this.state.history[step]), this.state.history[step]).length;
-
-    this.setState({
-      stepNumber: step,
-      xIsNext: (step % 2) === 0,
-      pl1: pointPl1,
-      pl2: pointPl2,
-      winner: checkWinner(pointPl1, pointPl2),
+    this.setState ({
+      rows: rows,
+      cols: cols,
+      history: [{
+        squares: Array(rows * cols).fill(5)
+      }],
+      pl1: 0,
+      pl2: 0,
+      lastMv:{
+        pl1: -1,
+        pl2: -1},
+      winner: 0,
+      stepNumber: 0,
+      xIsNext: false
     });
   }
 
@@ -115,23 +135,13 @@ class Domino extends React.Component {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
 
-    const moves = history.map((step, move) => {
-      const desc = move ?
-        'Go to move #' + move :
-        'Go to game start';
-      return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
-        </li>
-      );
-    });
-
-
     return (
       <div className="wrapper">
 
         <div className="game">
           <div className="game-board">
+            <a className='resetLink' 
+            onClick={() => this.reset(0)}>Restart</a>
             <Players
               current={this.state.xIsNext}
               pl1points={this.state.pl1}
@@ -142,11 +152,9 @@ class Domino extends React.Component {
               squares={current.squares}
               cols={this.state.cols}
               rows={this.state.rows}
+              lastMv={this.state.lastMv}
               onClick={(i) => this.handleClick(i)}
             />
-          </div>
-          <div className="game-info">
-            <ol>{moves}</ol>
           </div>
         </div>
       </div>
@@ -156,6 +164,10 @@ class Domino extends React.Component {
 
 function Square(props) {
   var classname = "square color" + props.value;
+  if(props.lastMv.pl1 === props.index || 
+    props.lastMv.pl2 === props.index){
+      classname += " lastmove";
+    }
   return (
     <div className={classname} onClick={props.onClick}>
       <div className="number">{props.value}</div>
@@ -211,7 +223,7 @@ const squareSum = (x, y) => {
     return x + y;
   } else {
     return 10;
-  };
+  }
 };
 
 const squareSub = (x, y) => {
@@ -222,7 +234,7 @@ const squareSub = (x, y) => {
     return x - y;
   } else {
     return 0;
-  };
+  }
 };
 
 // ========================================

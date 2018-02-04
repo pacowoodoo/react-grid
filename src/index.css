@@ -14,6 +14,7 @@ ol, ul {
   align-items: top;
   justify-content: center;
   margin: auto;
+  letter-spacing: -2.9px;
 }
 
 .player {
@@ -35,7 +36,7 @@ ol, ul {
 
 .player.color10 {
   background-color: #fff;
-  color: #39c0b3;
+  color: #00dbe8;
 }
 
 .player.winner {
@@ -45,10 +46,10 @@ ol, ul {
 
 .player .points {
   clear: both;
-  font-weight: 400;
-  font-size: 32px;
+  font-size: 72px;
   text-align: center;
-  color: #000;
+  margin-top: -42px;
+  margin-bottom: 15px;
 }
 
 .vessus {
@@ -83,6 +84,13 @@ ol, ul {
   overflow-x: hidden;
 }
 
+.resetLink{
+  cursor: pointer;
+  display: block;
+  align-self: flex-end;
+  text-align: right;
+}
+
 /**BOARD************/
 
 .board-row:after {
@@ -115,7 +123,6 @@ ol, ul {
   width: 50px;
   opacity: 0.9;
   transition: transform 0.1s, color 0.5s, background-color 0.5s;
-  border: 1px solid #333;
 }
 
 .square div:hover {
@@ -126,70 +133,11 @@ ol, ul {
   position: relative;
   z-index: 100;
 }
-
-.hexagon {
-  position: relative;
-  list-style-type: none;
-  width: 27.85714285714286%;
-  padding-bottom: 32.16760145166612%;
-  float: left;
-  overflow: hidden;
-  visibility: hidden;
-  -webkit-transform: rotate(-60deg) skewY(30deg);
-  -ms-transform: rotate(-60deg) skewY(30deg);
-  transform: rotate(-60deg) skewY(30deg);
-  background-color: aquamarine;
-}
-
-/*Raimbow colors*/
-
-.color0, .color0 div.number {
-  background-color: #fbb735;
-}
-
-.color1, .color1 div.number {
-  background-color: #e98931;
-}
-
-.color2, .color2 div.number {
-  background-color: #eb403b;
-}
-
-.color3, .color3 div.number {
-  background-color: #b32E37;
-}
-
-.color4, .color4 div.number {
-  background-color: #6c2a6a;
-}
-
-.color5, .color5 div.number {
-  background-color: #5c4399;
-}
-
-.color6, .color6 div.number {
-  background-color: #274389;
-}
-
-.color7, .color7 div.number {
-  background-color: #1f5ea8;
-}
-
-.color8, .color8 div.number {
-  background-color: #227FB0;
-}
-
-.color9, .color9 div.number {
-  background-color: #2ab0c5;
-}
-
-.color10, .color10 div.number {
-  background-color: #00CDEB;
+.square.lastmove div{
+  text-decoration: line-through;
 }
 
 /*Teal and orange*/
-
-/*Raimbow colors*/
 
 .color0, .color0 div.number {
   background-color: #FFB60A;
@@ -236,11 +184,11 @@ ol, ul {
 }
 
 .color10, .color10 div.number {
-  background-color: #39c0b3;
+  background-color: #00dbe8;
 }
 
 .color10 div.number {
-  color: #39c0b3;
+  color: #00dbe8;
 }
 
 .kbd-navigation .square:focus {
@@ -255,6 +203,11 @@ ol, ul {
   }
   .game {
     flex-direction: column;
+  }
+  .player .points {
+    font-size: 32px;
+    margin-top: -12px;
+    margin-bottom: 5px;
   }
   .square, .square div {
     width: 30px;
